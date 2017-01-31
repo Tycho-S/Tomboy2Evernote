@@ -1,6 +1,9 @@
 # Tomboy2Evernote
 Exports Tomboy Notes to Evernote Format
 
+Updated version that exports each Tomboy Notebook as a separate enex file so they will be imported as separate notebooks.
+Note: .enex format does not seem to have a way to specify the target notebook!
+
 ![Tomboy](docs/tomboy.png "Tomboy")
 
 ![Evernote](docs/evernote.png "Evernote")
