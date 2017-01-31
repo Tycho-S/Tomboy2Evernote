@@ -9,23 +9,41 @@ import os
 
 def process_files(inputdir, outputdir):
     os.chdir(inputdir)
-    enex_notes = []
-    output_filename = 'Tomboy2Evernote.enex'
+    notebooklist = {}
+    notebooknames =[]
     i = 0
     for file in glob.glob("*.note"):
         note_file_path = inputdir + '/' + file
         note_body = open(note_file_path, 'r').read()
         title = get_title(note_body)
+        notebookname = get_notebook(note_body)
         html_note_body = get_html_body(note_body)
         created_date = tomboy_to_enex_date(get_created_date(note_body))
         updated_date = tomboy_to_enex_date(get_updated_date(note_body))
+        try:
+            enex_notes = notebooklist[notebookname]
+        except KeyError:
+            enex_notes = []
+            notebooknames.append(notebookname)
         enex_notes.append(make_enex(title, html_note_body, created_date, updated_date))
+        notebooklist[notebookname] = enex_notes
         i += 1
-    multi_enex_body = make_multi_enex(enex_notes)
-    save_to_file(outputdir, output_filename, multi_enex_body)
-    print "Exported notes count: " + `i`
-    print "Evernote file location: " + outputdir + "/" + output_filename
+    for name in notebooknames:
+        fixname = remove_invalid_chars (name)
+        enex_notes = notebooklist[name]
+        multi_enex_body = make_multi_enex(enex_notes)
+        output_filename = fixname + ".enex";
+        save_to_file(outputdir, output_filename, multi_enex_body)
+        print "Notebook file exported: "+ output_filename
 
+    print "Exported notes count: " + `i`
+
+def remove_invalid_chars (name):
+    namenew = re.sub('&amp;', '', name)
+    namenew = re.sub('[^a-zA-Z0-9 \n\.]', '', namenew)
+    namenew = re.sub(' +',' ', namenew)
+    namenew = namenew.strip()
+    return namenew
 
 def get_title(note_body):
     title_regex = re.compile("<title>(.+?)</title>")
@@ -35,6 +53,13 @@ def get_title(note_body):
     else:
        return "No Title"
 
+def get_notebook(note_body):
+    title_regex = re.compile("<tag>system:notebook:(.+?)</tag>")
+    matches = title_regex.search(note_body);
+    if matches:
+        return matches.group(1)
+    else:
+       return "Unassigned"
 
 def get_created_date(note_body):
     created_date_regex = re.compile("<create-date>(.+?)</create-date>")
@@ -188,4 +213,3 @@ def main(argv):
 
 if __name__ == "__main__":
     main(sys.argv[1:])
-
