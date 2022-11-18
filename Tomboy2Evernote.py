@@ -14,7 +14,7 @@ def process_files(inputdir, outputdir):
     i = 0
     for file in glob.glob("*.note"):
         note_file_path = inputdir + '/' + file
-        note_body = open(note_file_path, 'r').read()
+        note_body = open(note_file_path, 'r', encoding='utf_8_sig').read()
         title = get_title(note_body)
         notebookname = get_notebook(note_body)
         html_note_body = get_html_body(note_body)
@@ -34,9 +34,9 @@ def process_files(inputdir, outputdir):
         multi_enex_body = make_multi_enex(enex_notes)
         output_filename = fixname + ".enex";
         save_to_file(outputdir, output_filename, multi_enex_body)
-        print "Notebook file exported: "+ output_filename
+        print ("Notebook file exported: "+ output_filename)
 
-    print "Exported notes count: " + `i`
+    print("Exported notes count: ",i)
 
 def remove_invalid_chars (name):
     namenew = re.sub('&amp;', '', name)
@@ -165,13 +165,13 @@ def make_multi_enex(multi_enex_body):
 def save_to_file(outputdir, filename, body):
     if not os.path.exists(outputdir):
         os.makedirs(outputdir)
-    text_file = open(outputdir + '/' + filename, "w")
+    text_file = open(outputdir + '/' + filename, "w", encoding='utf_8_sig' )
     text_file.write(body)
     text_file.close()
 
 
 def get_help_line():
-    print 'Usage: ', sys.argv[0], ' -i <inputdir> -o <outputdir>'
+    print ('Usage: ', sys.argv[0], ' -i <inputdir> -o <outputdir>')
 
 
 def get_input_params(argv):
@@ -191,10 +191,10 @@ def get_input_params(argv):
         elif opt in ("-o", "--odir"):
             outputdir = arg
     if (inputdir == ""):
-        print "Error: Missing input folder"
+        print("Error: Missing input folder")
         printhelpline = 1
     if (outputdir == ""):
-        print "Error: Missing output folder"
+        print("Error: Missing output folder")
         printhelpline = 1
     if printhelpline == 1:
         exit_with_error()
