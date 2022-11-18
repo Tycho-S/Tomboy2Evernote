@@ -15,7 +15,6 @@ def process_files(inputdir, outputdir):
     for file in glob.glob("*.note"):
         note_file_path = inputdir + '/' + file
         note_body = open(note_file_path, 'r', encoding='utf_8_sig').read()
-        print(note_body)
         title = get_title(note_body)
         notebookname = get_notebook(note_body)
         html_note_body = get_html_body(note_body)
